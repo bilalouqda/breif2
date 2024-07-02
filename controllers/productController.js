@@ -28,6 +28,32 @@ exports.getProductById = async (req, res) => {
     }
 };
 
+// Rechercher des produits
+exports.searchProducts = async (req, res) => {
+    const { query, page = 1, limit = 10 } = req.query;
+    try {
+        const products = await Product.find({ $text: { $search: query } })
+            .skip((page - 1) * limit)
+            .limit(Number(limit));
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Pagination des produits
+exports.paginateProducts = async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+    try {
+        const products = await Product.find()
+            .skip((page - 1) * limit)
+            .limit(Number(limit));
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 exports.updateProduct = async (req, res) => {
     try {
         const par = req.params.id
