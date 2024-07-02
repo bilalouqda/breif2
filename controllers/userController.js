@@ -1,6 +1,5 @@
 const User = require('../models/User');
 
-// Créer un utilisateur
 exports.createUser = async (req, res) => {
     try {
         const user = new User(req.body);
@@ -11,20 +10,18 @@ exports.createUser = async (req, res) => {
     }
 };
 
-// Lire tous les utilisateurs
 exports.getAllUsers = async (req, res) => {
     try {
-        const users = await User.find();
+        const users = await User.find().populate('orders');
         res.status(200).json(users);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
 
-// Lire un utilisateur par ID
 exports.getUserById = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.id).populate('orders');
         if (!user) return res.status(404).json({ message: 'User not found' });
         res.status(200).json(user);
     } catch (err) {
@@ -32,10 +29,11 @@ exports.getUserById = async (req, res) => {
     }
 };
 
-// Mettre à jour un utilisateur
 exports.updateUser = async (req, res) => {
     try {
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const par = req.params.id
+        const body = req.body
+        const user = await User.findByIdAndUpdate(par, body);
         if (!user) return res.status(404).json({ message: 'User not found' });
         res.status(200).json(user);
     } catch (err) {
@@ -43,7 +41,6 @@ exports.updateUser = async (req, res) => {
     }
 };
 
-// Supprimer un utilisateur
 exports.deleteUser = async (req, res) => {
     try {
         const user = await User.findByIdAndDelete(req.params.id);

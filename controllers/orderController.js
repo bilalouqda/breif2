@@ -1,6 +1,5 @@
-const Order = require('../models/Order');
+const Order = require('../models/Ordre');
 
-// Créer une commande
 exports.createOrder = async (req, res) => {
     try {
         const order = new Order(req.body);
@@ -11,20 +10,18 @@ exports.createOrder = async (req, res) => {
     }
 };
 
-// Lire toutes les commandes
 exports.getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find().populate('userId').populate('products.productId');
+        const orders = await Order.find().populate('userId').populate('products');
         res.status(200).json(orders);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
 
-// Lire une commande par ID
 exports.getOrderById = async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id).populate('userId').populate('products.productId');
+        const order = await Order.findById(req.params.id).populate('userId').populate('products');
         if (!order) return res.status(404).json({ message: 'Order not found' });
         res.status(200).json(order);
     } catch (err) {
@@ -32,10 +29,11 @@ exports.getOrderById = async (req, res) => {
     }
 };
 
-// Mettre à jour une commande
 exports.updateOrder = async (req, res) => {
     try {
-        const order = await Order.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const par = req.params.id
+        const body = req.body
+        const order = await Order.findByIdAndUpdate(par, body);
         if (!order) return res.status(404).json({ message: 'Order not found' });
         res.status(200).json(order);
     } catch (err) {
@@ -43,7 +41,6 @@ exports.updateOrder = async (req, res) => {
     }
 };
 
-// Supprimer une commande
 exports.deleteOrder = async (req, res) => {
     try {
         const order = await Order.findByIdAndDelete(req.params.id);

@@ -4,16 +4,22 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+const userRoute = require('./routes/users')
+const productsRoute = require('./routes/products')
+const ordersRoute = require('./routes/orders')
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Middleware
 app.use(express.json());
 
-mongoose.connect(process.env.URL, { useNewUrlParser: true, useUnifiedTopology: true })
+app.use("/users",userRoute)
+app.use("/products",productsRoute)
+app.use("/orders",ordersRoute)
+
+mongoose.connect(process.env.URL)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
 
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`Server running on http://localhost:${port}`);
 });

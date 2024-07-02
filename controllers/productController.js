@@ -1,6 +1,4 @@
 const Product = require('../models/Product');
-
-// Créer un produit
 exports.createProduct = async (req, res) => {
     try {
         const product = new Product(req.body);
@@ -11,7 +9,6 @@ exports.createProduct = async (req, res) => {
     }
 };
 
-// Lire tous les produits
 exports.getAllProducts = async (req, res) => {
     try {
         const products = await Product.find();
@@ -21,7 +18,6 @@ exports.getAllProducts = async (req, res) => {
     }
 };
 
-// Lire un produit par ID
 exports.getProductById = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -32,10 +28,11 @@ exports.getProductById = async (req, res) => {
     }
 };
 
-// Mettre à jour un produit
 exports.updateProduct = async (req, res) => {
     try {
-        const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const par = req.params.id
+        const body = req.body
+        const product = await Product.findByIdAndUpdate(par,body);
         if (!product) return res.status(404).json({ message: 'Product not found' });
         res.status(200).json(product);
     } catch (err) {
@@ -43,7 +40,6 @@ exports.updateProduct = async (req, res) => {
     }
 };
 
-// Supprimer un produit
 exports.deleteProduct = async (req, res) => {
     try {
         const product = await Product.findByIdAndDelete(req.params.id);
