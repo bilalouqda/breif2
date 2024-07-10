@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
@@ -23,6 +24,20 @@ userSchema.pre('save', async function(next) {
         next(error);
     }
 });
+
+
+userSchema.methods.generateAuthToken = function() {
+    const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    console.log(token);
+    return token;
+}; 
+
+// Method to check password
+userSchema.methods.isValidPassword = async function(password) {
+    const pass = await bcrypt.compare(password, this.password);
+    console.log(pass);
+    return pass
+};
 
 const User = mongoose.model('User', userSchema);
 
