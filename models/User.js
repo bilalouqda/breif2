@@ -5,6 +5,11 @@ const jwt = require('jsonwebtoken');
 const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    role: { 
+        type: String, 
+        enum: ['user', 'admin'],
+        default: 'user' 
+    },  
     orders: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Ordre'
@@ -25,14 +30,18 @@ userSchema.pre('save', async function(next) {
     }
 });
 
-
 userSchema.methods.generateAuthToken = function() {
-    const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    console.log(token);
+    const token = jwt.sign({ id: this._id, role: this.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
     return token;
-}; 
+};
 
-// Method to check password
+// userSchema.methods.generateAuthToken = function() {
+//     const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+//     console.log(token);
+//     return token;
+// }; 
+
+
 userSchema.methods.isValidPassword = async function(password) {
     const pass = await bcrypt.compare(password, this.password);
     console.log(pass);
